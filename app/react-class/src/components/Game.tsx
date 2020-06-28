@@ -53,6 +53,7 @@ export class Game extends Component<unknown, GameState> {
   update = () => {
     this.updateBall();
     this.updateHuman();
+    this.updateComputer();
     this.req = requestAnimationFrame(this.update);
   };
 
@@ -131,6 +132,22 @@ export class Game extends Component<unknown, GameState> {
       paddleBottom: {
         ...paddleBottom,
         ...update,
+      },
+    });
+  };
+
+  updateComputer = () => {
+    let { paddleTop, ball } = this.state;
+    let diff = -((paddleTop.x + paddleTop.w) / 2 - ball.x);
+    if (diff < -PADDLE_SPEED) {
+      diff = -PADDLE_SPEED;
+    } else if (diff > PADDLE_SPEED) {
+      diff = PADDLE_SPEED;
+    }
+    this.setState({
+      paddleTop: {
+        ...paddleTop,
+        x: paddleTop.x + diff,
       },
     });
   };
