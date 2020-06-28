@@ -1,6 +1,7 @@
 import React, { Component, createRef } from "react";
 import { Playground, Paddle, Ball } from "../components";
 import { Context2D } from "../ctx";
+import { KeyCode, Direction } from "@lib/enumerables";
 import {
   VIEWPORT_WIDTH,
   VIEWPORT_HEIGHT,
@@ -9,6 +10,7 @@ import {
   PADDLE_HEIGHT,
   BALL_RADIUS,
   BALL_SPEED,
+  PADDLE_SPEED,
 } from "@lib/constants";
 
 interface GameState {
@@ -20,6 +22,7 @@ interface GameState {
 export class Game extends Component<unknown, GameState> {
   ref = createRef<HTMLCanvasElement>();
   req: number = null!;
+  keys: Set<number> = new Set();
 
   state = {
     ball: {
@@ -49,6 +52,7 @@ export class Game extends Component<unknown, GameState> {
 
   update = () => {
     this.updateBall();
+    this.updateHuman();
     this.req = requestAnimationFrame(this.update);
   };
 
@@ -104,11 +108,56 @@ export class Game extends Component<unknown, GameState> {
     });
   };
 
+  updateHuman = () => {
+    let { paddleBottom } = this.state;
+    let update = {};
+    switch (this.humanMove) {
+      case Direction.LEFT:
+        let collideLeft = paddleBottom.x <= 0;
+        if (collideLeft) update = { x: 0, vx: 0 };
+        else update = { x: paddleBottom.x - PADDLE_SPEED, vx: -PADDLE_SPEED };
+        break;
+      case Direction.RIGHT:
+        let collideRight = paddleBottom.x + paddleBottom.w >= VIEWPORT_WIDTH;
+        if (collideRight)
+          update = { x: VIEWPORT_WIDTH - paddleBottom.w, vx: 0 };
+        else update = { x: paddleBottom.x + PADDLE_SPEED, vx: PADDLE_SPEED };
+        break;
+      case Direction.NONE:
+        update = { vx: 0 };
+        break;
+    }
+    this.setState({
+      paddleBottom: {
+        ...paddleBottom,
+        ...update,
+      },
+    });
+  };
+
+  get humanMove() {
+    if (this.keys.has(KeyCode.LEFT_ARROW)) return Direction.LEFT;
+    else if (this.keys.has(KeyCode.RIGHT_ARROW)) return Direction.RIGHT;
+    else return Direction.NONE;
+  }
+
+  handleKeyDown = ({ keyCode }: KeyboardEvent) => {
+    this.keys.add(keyCode);
+  };
+
+  handleKeyUp = ({ keyCode }: KeyboardEvent) => {
+    this.keys.delete(keyCode);
+  };
+
   componentDidMount() {
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keyup", this.handleKeyUp);
     this.update();
   }
 
   componentWillUnmount() {
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keyup", this.handleKeyUp);
     cancelAnimationFrame(this.req);
   }
 
