@@ -138,7 +138,7 @@ export class Game extends Component<unknown, GameState> {
 
   updateComputer = () => {
     let { paddleTop, ball } = this.state;
-    let diff = -((paddleTop.x + paddleTop.w) / 2 - ball.x);
+    let diff = -(paddleTop.x + paddleTop.w / 2 - ball.x);
     if (diff < -PADDLE_SPEED) {
       diff = -PADDLE_SPEED;
     } else if (diff > PADDLE_SPEED) {
