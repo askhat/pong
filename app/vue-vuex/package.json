@@ -1,0 +1,22 @@
+{
+  "name": "@pong/vue-vuex",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "devDependencies": {
+    "@lib/constants": "0.0.1",
+    "@vue/component-compiler-utils": "^3.1.2",
+    "parcel-bundler": "^1.12.4",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "dependencies": {
+    "@lib/constants": "0.0.1",
+    "@lib/enumerables": "0.0.1",
+    "vue": "^2.6.11",
+    "vue-hot-reload-api": "^2.3.4",
+    "vuex": "^3.4.0"
+  }
+}
